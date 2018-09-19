@@ -1,19 +1,13 @@
 package com.leon.taobao.service;
 
-import com.baimaodai.util.httputil.HttpRespParser;
-import com.baimaodai.util.httputil.HttpUtil;
-import com.baimaodai.util.httputil.model.StrRspWithHeaders;
 import com.google.gson.Gson;
-import com.leon.taobao.log.Logger;
-import com.leon.taobao.model.ArticleItem;
+import com.leon.taobao.model.TbkItem;
 import com.leon.taobao.model.WeChatConstant;
-import com.leon.taobao.model.WxUserInfo;
 import com.leon.taobao.util.WeChatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +24,19 @@ public class WeChatService {
     private UserService userService;
 
     @Autowired
+    private TbkService tbkService;
+
+    @Autowired
     private Gson gson;
+
+    private String tklTemplate = "小淘推荐，必属精选\n" +
+            "-----------------\n" +
+            "%s\n" +
+            "     【原价】%.2f元\n" +
+            "     【折后价】%.2f元\n" +
+            "-----------------\n" +
+            "\uD83D\uDCB0复制这条信息，\uD83D\uDCB0\n" +
+            "%s ，打开【手机淘宝】即可查看";
 
     public String processRequest(HttpServletRequest request, String openId) {
         // xml格式的消息数据
@@ -48,56 +54,20 @@ public class WeChatService {
                 case WeChatConstant.REQ_MESSAGE_TYPE_TEXT:
                     mes = requestMap.get(WeChatConstant.Content);
                     messageService.create(mes, openId);
-                    if ("我的信息".equals(mes)) {
-                        String accessToken = WeChatUtil.getAccessToken(openId);
-                        WxUserInfo userInfo = getUserInfo(accessToken, openId);
-                        System.out.println(gson.toJson(userInfo));
-                        String nickname = userInfo.nickname;
-                        String city = userInfo.city;
-                        String province = userInfo.province;
-                        String country = userInfo.country;
-                        String headimgurl = userInfo.headimgurl;
-                        List<ArticleItem> items = new ArrayList<>();
-                        ArticleItem item = new ArticleItem();
-                        item.setTitle("你的信息");
-                        item.setDescription("昵称:" + nickname + "  地址:" + country + " " + province + " " + city);
-                        item.setPicUrl(headimgurl);
-                        item.setUrl("http://www.baidu.com");
-                        items.add(item);
+                    /*List<ArticleItem> items = new ArrayList<>();
 
-                        respXml = WeChatUtil.sendArticleMsg(requestMap, items);
-                    } else {
-                        List<ArticleItem> items = new ArrayList<>();
-                        ArticleItem item = new ArticleItem();
-                        item.setTitle("照片墙");
-                        item.setDescription("阿狸照片墙");
-                        item.setPicUrl("http://changhaiwx.pagekite.me/photo-wall/a/iali11.jpg");
-                        item.setUrl("http://changhaiwx.pagekite.me/page/photowall");
-                        items.add(item);
-
-                        item = new ArticleItem();
-                        item.setTitle("哈哈");
-                        item.setDescription("一张照片");
-                        item.setPicUrl("http://changhaiwx.pagekite.me/images/me.jpg");
-                        item.setUrl("http://changhaiwx.pagekite.me/page/index");
-                        items.add(item);
-
-                        item = new ArticleItem();
-                        item.setTitle("小游戏2048");
-                        item.setDescription("小游戏2048");
-                        item.setPicUrl("http://changhaiwx.pagekite.me/images/2048.jpg");
-                        item.setUrl("http://changhaiwx.pagekite.me/page/game2048");
-                        items.add(item);
-
-                        item = new ArticleItem();
-                        item.setTitle("百度");
-                        item.setDescription("百度一下");
-                        item.setPicUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505100912368&di=69c2ba796aa2afd9a4608e213bf695fb&imgtype=0&src=http%3A%2F%2Ftx.haiqq.com%2Fuploads%2Fallimg%2F170510%2F0634355517-9.jpg");
-                        item.setUrl("http://www.baidu.com");
-                        items.add(item);
-
-                        respXml = WeChatUtil.sendArticleMsg(requestMap, items);
+                    List<TbkItem> tbkItemList = tbkService.getTbkItemList(mes);
+                    for(TbkItem item : tbkItemList){
+                        items.add(new ArticleItem(item.nick, item.title, item.pict_url, item.item_url));
                     }
+
+                    respXml = WeChatUtil.sendArticleMsg(requestMap, items);*/
+
+                    List<TbkItem> tbkItemList = tbkService.getTbkItemList(mes);
+                    TbkItem item = tbkItemList.get(0);
+                    List<String> tklList = tbkService.getTklList(tbkItemList.subList(0, 1));
+                    respContent = String.format(tklTemplate, item.title, item.reserve_price, item.zk_final_price, tklList.get(0));
+                    respXml = WeChatUtil.sendTextMsg(requestMap, respContent);
                     break;
                 // 图片消息
                 case WeChatConstant.REQ_MESSAGE_TYPE_IMAGE:
@@ -134,7 +104,6 @@ public class WeChatService {
                             respContent = "谢谢您的关注！";
                             respXml = WeChatUtil.sendTextMsg(requestMap, respContent);
                             userService.focus(openId);
-                            Logger.infoLog.info("1"+respXml);
                             break;
                         // 取消关注
                         case WeChatConstant.EVENT_TYPE_UNSUBSCRIBE:
@@ -155,26 +124,12 @@ public class WeChatService {
                     }
                     break;
             }
-            Logger.infoLog.info("2"+respXml);
+            System.out.println(respXml);
             return respXml;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
 
-    }
-
-    public WxUserInfo getUserInfo(String accessToken, String openId){
-        try {
-            StrRspWithHeaders strRspWithHeaders = HttpUtil.url("https://api.weixin.qq.com/cgi-bin/user/info")
-                    .param("access_token", accessToken)
-                    .param("openId", openId)
-                    .param("lang", "zh_CN")
-                    .doGet(HttpRespParser.PARSE2RspWithHeaders);
-            return gson.fromJson(strRspWithHeaders.respContent, WxUserInfo.class);
-        } catch (Exception e) {
-            Logger.errorLog.error(e);
-        }
-        return null;
     }
 }

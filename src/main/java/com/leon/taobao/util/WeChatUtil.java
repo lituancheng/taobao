@@ -4,14 +4,9 @@ package com.leon.taobao.util;
  * Created by lituancheng on 2018/9/13
  */
 
-import com.baimaodai.util.httputil.HttpRespParser;
-import com.baimaodai.util.httputil.HttpUtil;
-import com.baimaodai.util.httputil.model.StrRspWithHeaders;
 import com.google.gson.Gson;
 import com.leon.taobao.aes.AesException;
 import com.leon.taobao.aes.SHA1;
-import com.leon.taobao.controller.model.AccessTokenResp;
-import com.leon.taobao.log.Logger;
 import com.leon.taobao.model.ArticleItem;
 import com.leon.taobao.model.WeChatConstant;
 import org.dom4j.Document;
@@ -34,29 +29,6 @@ public class WeChatUtil {
     private static Gson gson = new Gson();
 
     private static final String GET_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token";
-
-    private static ExpiryMap<String, String> cacheMap = new ExpiryMap<>();
-
-    public static String getAccessToken(String openId){
-        String accessToken;
-        accessToken = cacheMap.get(openId);
-        if(accessToken == null){
-            try {
-                StrRspWithHeaders strRspWithHeaders = HttpUtil.url(GET_ACCESS_TOKEN_URL)
-                        .param("grant_type", "client_credential")
-                        .param("appid", WeChatConstant.appID)
-                        .param("secret", WeChatConstant.appsecret)
-                        .doGet(HttpRespParser.PARSE2RspWithHeaders);
-                AccessTokenResp accessTokenResp = gson.fromJson(strRspWithHeaders.respContent, AccessTokenResp.class);
-                Logger.debugLog.debug(strRspWithHeaders.respContent);
-                accessToken = accessTokenResp.access_token;
-                cacheMap.put(openId, accessToken, accessTokenResp.expires_in * 1000);
-            } catch (Exception e) {
-                Logger.errorLog.error(e);
-            }
-        }
-        return accessToken;
-    }
 
     /**
      * 验证Token

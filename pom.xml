@@ -86,12 +86,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.baimaodai.util</groupId>
-			<artifactId>httputil</artifactId>
-			<version>1.0.6</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>20.0</version>
@@ -139,34 +133,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler.version}</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-					<encoding>${project.build.sourceEncoding}</encoding>
-					<compilerArguments>
-						<verbose/>
-						<bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
-					</compilerArguments>
-				</configuration>
-			</plugin>
 		</plugins>
 		<finalName>taobao</finalName>
 	</build>
-
-	<repositories>
-		<!--<repository>-->
-		<!--<id>nexus</id>-->
-		<!--<name>Nexus Mirror</name>-->
-		<!--<url>http://172.16.30.36:8081/nexus/content/groups/public/</url>-->
-		<!--</repository>-->
-		<repository>
-			<id>bmd-nexus-thirdparty</id>
-			<name>baimaodai</name>
-			<url>http://172.16.30.56:8081/nexus/content/repositories/thirdparty/</url>
-		</repository>
-	</repositories>
 </project>

@@ -9,6 +9,14 @@ public class ArticleItem {
     private String Description;
     private String PicUrl;
     private String Url;
+
+    public ArticleItem(String title, String description, String picUrl, String url) {
+        Title = title;
+        Description = description;
+        PicUrl = picUrl;
+        Url = url;
+    }
+
     public String getTitle() {
         return Title;
     }
