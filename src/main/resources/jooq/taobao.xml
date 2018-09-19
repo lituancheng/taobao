@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.10.0.xsd">
+    <!-- Configure the database connection here -->
+    <jdbc>
+        <driver>com.mysql.cj.jdbc.Driver</driver>
+        <url>jdbc:mysql://127.0.0.1:3306/taobao?useSSL=false</url>
+        <user>root</user>
+        <password>root</password>
+    </jdbc>
+
+    <generator>
+        <name>org.jooq.util.JavaGenerator</name>
+        <database>
+            <name>org.jooq.util.mysql.MySQLDatabase</name>
+            <inputSchema>taobao</inputSchema>
+            <outputSchemaToDefault>true</outputSchemaToDefault>
+            <unsignedTypes>false</unsignedTypes>
+            <includes>
+                .*
+            </includes>
+            <excludes></excludes>
+            <forcedTypes>
+                <forcedType>
+                    <name>INTEGER</name>
+                    <types>TINYINT</types>
+                </forcedType>
+                <forcedType>
+                    <name>REAL</name>
+                    <types>FLOAT(.*,.*)</types>
+                </forcedType>
+                <forcedType>
+                    <userType>java.lang.String</userType>
+                    <binding>com.leon.taobao.jooq.PostgresJSONBinding</binding>
+                    <types>JSON</types>
+                </forcedType>
+            </forcedTypes>
+        </database>
+        <target>
+            <packageName>com.leon.taobao.model.taobao</packageName>
+            <directory>../../java/</directory>
+        </target>
+        <generate>
+            <pojos>true</pojos>
+            <daos>false</daos>
+        </generate>
+    </generator>
+</configuration>
