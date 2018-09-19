@@ -125,6 +125,12 @@
 			<artifactId>jooq-meta</artifactId>
 			<version>${org.jooq.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.taobao</groupId>
+			<artifactId>tbk-sdk</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

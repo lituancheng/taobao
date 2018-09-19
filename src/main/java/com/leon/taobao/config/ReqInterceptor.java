@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.leon.taobao.controller.model.ReqHolder;
 import com.leon.taobao.controller.model.ReqInfo;
 import com.leon.taobao.log.Logger;
+import com.leon.taobao.util.ExpiryMap;
 import com.leon.taobao.util.ServletRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,9 +25,20 @@ public class ReqInterceptor implements HandlerInterceptor {
     @Autowired
     private Gson gson;
 
+    private static ExpiryMap<String, Boolean> cacheMap = new ExpiryMap<>();
+
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object handler) throws NoSuchFieldException, IllegalAccessException {
+        Map<String, String[]> parameters = request.getParameterMap();
+        String signature = parameters.get("signature")[0];
+        String openid = parameters.get("openid")[0];
+        String key = signature + openid;
+        if(cacheMap.containsKey(key)){
+            return false;
+        }else {
+            cacheMap.put(key, true, 10 * 1000); //拒绝10s内的重复请求
+        }
         String reqId = UUID.randomUUID().toString();
         String contextPath = request.getContextPath();
         String sessionId = request.getSession().getId();
@@ -35,7 +47,6 @@ public class ReqInterceptor implements HandlerInterceptor {
         String method = request.getMethod();
         String reqIp = ServletRequestUtil.getRemoteIp(request);
         String port = ServletRequestUtil.getRemotePort(request);
-        Map<String, String[]> parameters = request.getParameterMap();
         ReqInfo reqInfo = ReqInfo.builder()
                 .setId(reqId)
                 .setIp(reqIp)

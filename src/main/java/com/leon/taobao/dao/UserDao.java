@@ -10,6 +10,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserDao extends BaseDao {
 
+    public User getByOpenIdForUpdate(String openId){
+        return taobaoDsl.selectFrom(Tables.USER).where(Tables.USER.OPEN_ID.eq(openId)).forUpdate().fetchOneInto(User.class);
+    }
+
     public User getByOpenId(String openId){
         return taobaoDsl.selectFrom(Tables.USER).where(Tables.USER.OPEN_ID.eq(openId)).fetchOneInto(User.class);
     }
@@ -25,13 +29,12 @@ public class UserDao extends BaseDao {
                 .getId();
     }
 
-    public Integer reFocus(String openId){
-        return taobaoDsl.update(Tables.USER)
+    public boolean reFocus(String openId){
+        int execute = taobaoDsl.update(Tables.USER)
                 .set(Tables.USER.ENABLE, NORMAL)
                 .where(Tables.USER.OPEN_ID.eq(openId))
-                .returning(Tables.USER.ID)
-                .fetchOne()
-                .getId();
+                .execute();
+        return execute > 0;
     }
 
     public boolean cancelFocus(String openId){

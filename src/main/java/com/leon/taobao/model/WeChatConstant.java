@@ -15,18 +15,18 @@ public class WeChatConstant {
     public static final String AES_KEY = "Kn8M27aEeQ7GmTdB03DglLK1rxR3rZJx6yIWJrmYjuI";
 
     public static final String RESP_MESSAGE_TYPE_TEXT = "text";
-    public static final Object REQ_MESSAGE_TYPE_TEXT = "text";
-    public static final Object REQ_MESSAGE_TYPE_IMAGE = "image";
-    public static final Object REQ_MESSAGE_TYPE_VOICE = "voice";
-    public static final Object REQ_MESSAGE_TYPE_VIDEO = "video";
-    public static final Object REQ_MESSAGE_TYPE_LOCATION = "location";
-    public static final Object REQ_MESSAGE_TYPE_LINK = "link";
-    public static final Object REQ_MESSAGE_TYPE_EVENT = "event";
-    public static final Object EVENT_TYPE_SUBSCRIBE = "SUBSCRIBE";
-    public static final Object EVENT_TYPE_UNSUBSCRIBE = "UNSUBSCRIBE";
-    public static final Object EVENT_TYPE_SCAN = "SCAN";
-    public static final Object EVENT_TYPE_LOCATION = "LOCATION";
-    public static final Object EVENT_TYPE_CLICK = "CLICK";
+    public static final String REQ_MESSAGE_TYPE_TEXT = "text";
+    public static final String REQ_MESSAGE_TYPE_IMAGE = "image";
+    public static final String REQ_MESSAGE_TYPE_VOICE = "voice";
+    public static final String REQ_MESSAGE_TYPE_VIDEO = "video";
+    public static final String REQ_MESSAGE_TYPE_LOCATION = "location";
+    public static final String REQ_MESSAGE_TYPE_LINK = "link";
+    public static final String REQ_MESSAGE_TYPE_EVENT = "event";
+    public static final String EVENT_TYPE_SUBSCRIBE = "subscribe";
+    public static final String EVENT_TYPE_UNSUBSCRIBE = "unsubscribe";
+    public static final String EVENT_TYPE_SCAN = "scan";
+    public static final String EVENT_TYPE_LOCATION = "location";
+    public static final String EVENT_TYPE_CLICK = "click";
 
     public static final String FromUserName = "FromUserName";
     public static final String ToUserName = "ToUserName";
